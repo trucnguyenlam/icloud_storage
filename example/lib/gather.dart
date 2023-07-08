@@ -93,7 +93,7 @@ class _GatherState extends State<Gather> {
             ],
             onSelected: (value) => Navigator.pushNamed(
               context,
-              value,
+              value as String,
               arguments: _containerIdController.text,
             ),
           ),

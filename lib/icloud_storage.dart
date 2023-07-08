@@ -27,6 +27,52 @@ class ICloudStorage {
     );
   }
 
+  /// [path] must not be in encoded URI and relative starting from Documents
+  static Future<List<Map<String, dynamic>>> listChildren({
+    required String containerId,
+    String? path,
+  }) async {
+    return await ICloudStoragePlatform.instance.listChildren(
+      containerId: containerId,
+      path: path,
+    );
+  }
+
+  /// [path] must not be in encoded URI and relative starting from Documents
+  static Future<Map<String, dynamic>> getFile({
+    required String containerId,
+    String? path,
+  }) async {
+    return await ICloudStoragePlatform.instance.getFile(
+      containerId: containerId,
+      path: path,
+    );
+  }
+
+  /// Download file that avoid using spotlight
+  static Future<void> fastDownload({
+    required String containerId,
+    required String relativePath,
+    required String destinationFilePath,
+    StreamHandler<double>? onProgress,
+  }) async {
+    if (!_validateRelativePath(relativePath)) {
+      throw InvalidArgumentException('invalid relativePath');
+    }
+    if (destinationFilePath.trim().isEmpty ||
+        destinationFilePath[destinationFilePath.length - 1] == '/') {
+      throw InvalidArgumentException('invalid destinationFilePath');
+    }
+
+    await ICloudStoragePlatform.instance.fastDownload(
+      containerId: containerId,
+      relativePath: relativePath,
+      destinationFilePath: destinationFilePath,
+      onProgress: onProgress,
+    );
+  }
+
+
   /// Initiate to upload a file to iCloud
   ///
   /// [containerId] is the iCloud Container Id.

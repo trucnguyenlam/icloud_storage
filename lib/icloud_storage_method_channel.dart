@@ -43,6 +43,74 @@ class MethodChannelICloudStorage extends ICloudStoragePlatform {
   }
 
   @override
+  Future<List<Map<String, dynamic>>> listChildren({
+    required String containerId,
+    String? path,
+  }) async {
+    final data =
+        await methodChannel.invokeListMethod<Map<dynamic, dynamic>>('listChildren', {
+      'containerId': containerId,
+      'path': path ?? '',
+    });
+
+    if (data != null) {
+      return data.map((e) => Map<String, dynamic>.from(e)).toList(growable: false);
+    } else {
+      return const [];
+    }
+  }
+
+  @override
+  Future<Map<String, dynamic>> getFile({
+    required String containerId,
+    String? path,
+  }) async {
+    final data = await methodChannel
+        .invokeMapMethod<dynamic, dynamic>('getFile', {
+      'containerId': containerId,
+      'path': path ?? '',
+    });
+
+    if (data != null) {
+      return Map<String, dynamic>.from(data);
+    } else {
+      return const {};
+    }
+  }
+
+  @override
+  Future<void> fastDownload({
+    required String containerId,
+    required String relativePath,
+    required String destinationFilePath,
+    StreamHandler<double>? onProgress,
+  }) async {
+    var eventChannelName = '';
+
+    if (onProgress != null) {
+      eventChannelName = _generateEventChannelName('fastDownload', containerId);
+
+      await methodChannel.invokeMethod(
+          'createEventChannel', {'eventChannelName': eventChannelName});
+
+      final downloadEventChannel = EventChannel(eventChannelName);
+      final stream = downloadEventChannel
+          .receiveBroadcastStream()
+          .where((event) => event is double)
+          .map((event) => event as double);
+
+      onProgress(stream);
+    }
+
+    await methodChannel.invokeMethod('fastDownload', {
+      'containerId': containerId,
+      'relativePath': relativePath,
+      'localFilePath': destinationFilePath,
+      'eventChannelName': eventChannelName
+    });
+  }
+
+  @override
   Future<void> upload({
     required String containerId,
     required String filePath,

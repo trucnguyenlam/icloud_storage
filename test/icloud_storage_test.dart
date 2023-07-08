@@ -57,6 +57,25 @@ class MockIcloudStoragePlatform
     _moveToRelativePath = toRelativePath;
     _calls.add('move');
   }
+
+  @override
+  Future<Map<String, dynamic>> getFile({required String containerId, String? path}) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<Map<String, dynamic>>> listChildren({required String containerId, String? path}) {
+    throw UnimplementedError();
+  }
+
+  @override
+    Future<void> fastDownload(
+      {required String containerId,
+      required String relativePath,
+      required String destinationFilePath,
+      StreamHandler<double>? onProgress}) async {
+    throw UnimplementedError();
+  }
 }
 
 void main() {
