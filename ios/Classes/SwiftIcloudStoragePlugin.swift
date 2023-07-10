@@ -234,7 +234,7 @@ public class SwiftIcloudStoragePlugin: NSObject, FlutterPlugin {
 
       let destinationURL = URL(fileURLWithPath: localFilePath)
       let sessionConfig = URLSessionConfiguration.default
-      let session =   (
+      let session = URLSession(
         configuration: sessionConfig,
         delegate: DownloadDelegate(
           destinationURL: destinationURL, streamHandler: downloadStreamHandler),
