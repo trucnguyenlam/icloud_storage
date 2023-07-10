@@ -56,9 +56,6 @@ class ICloudStorage {
     required String destinationFilePath,
     StreamHandler<double>? onProgress,
   }) async {
-    if (!_validateRelativePath(relativePath)) {
-      throw InvalidArgumentException('invalid relativePath');
-    }
     if (destinationFilePath.trim().isEmpty ||
         destinationFilePath[destinationFilePath.length - 1] == '/') {
       throw InvalidArgumentException('invalid destinationFilePath');
@@ -71,7 +68,6 @@ class ICloudStorage {
       onProgress: onProgress,
     );
   }
-
 
   /// Initiate to upload a file to iCloud
   ///
