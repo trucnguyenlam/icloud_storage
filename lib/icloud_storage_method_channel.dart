@@ -111,6 +111,16 @@ class MethodChannelICloudStorage extends ICloudStoragePlatform {
   }
 
   @override
+  Future<bool> isReady({
+    required String containerId,
+  }) async {
+    final ret = await methodChannel.invokeMethod<bool>('isReady', {
+      'containerId': containerId,
+    });
+    return true == ret;
+  }
+
+  @override
   Future<void> upload({
     required String containerId,
     required String filePath,

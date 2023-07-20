@@ -64,6 +64,11 @@ class MockIcloudStoragePlatform
   }
 
   @override
+  Future<bool> isReady({required String containerId}) {
+    throw UnimplementedError();
+  }
+
+  @override
   Future<List<Map<String, dynamic>>> listChildren({required String containerId, String? path}) {
     throw UnimplementedError();
   }

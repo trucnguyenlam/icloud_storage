@@ -65,6 +65,12 @@ abstract class ICloudStoragePlatform extends PlatformInterface {
     throw UnimplementedError('fastDownload() has not been implemented.');
   }
 
+  Future<bool> isReady({
+    required String containerId,
+  }) async {
+    throw UnimplementedError('isReady() has not been implemented.');
+  }
+
   /// Upload a local file to iCloud.
   ///
   /// [containerId] is the iCloud Container Id.

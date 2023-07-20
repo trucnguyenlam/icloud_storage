@@ -25,6 +25,8 @@ public class SwiftIcloudStoragePlugin: NSObject, FlutterPlugin {
       getFile(call, result)
     case "fastDownload":
       fastDownload(call, result)
+    case "isReady":
+      isReady(call, result)
     case "gather":
       gather(call, result)
     case "upload":
@@ -56,8 +58,7 @@ public class SwiftIcloudStoragePlugin: NSObject, FlutterPlugin {
         for nFileURL in fileURLs {
           let fileURL = canonicalURL(nFileURL)
           let map: [String: Any?] = [
-            "relativePath": String(
-              fileURL.absoluteString.dropFirst(containerURL.absoluteString.count)),
+            "relativePath": String(fileURL.path.dropFirst(containerURL.path.count)),
             "name": fileURL.lastPathComponent,
             "realPath": fileURL.path,
             "isFolder": fileURL.hasDirectoryPath,
@@ -140,6 +141,8 @@ public class SwiftIcloudStoragePlugin: NSObject, FlutterPlugin {
         fileSize = attributes.fileSize
       } catch {
         DebugHelper.log("Error retrieving file attributes: \(error)")
+        result(nativeCodeError(error))
+        return
       }
     }
     let map: [String: Any?] = [
@@ -341,6 +344,36 @@ public class SwiftIcloudStoragePlugin: NSObject, FlutterPlugin {
       fileMaps.append(map)
     }
     return fileMaps
+  }
+
+  private func isReady(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
+    guard let args = call.arguments as? [String: Any],
+      let containerId = args["containerId"] as? String
+    else {
+      result(argumentError)
+      return
+    }
+
+    if FileManager.default.ubiquityIdentityToken == nil {
+      result(FlutterError(code: "E_NOTSIGNIN", message: "Not signed in to iCloud", details: nil))
+      return
+    }
+
+    guard let containerURL = FileManager.default.url(forUbiquityContainerIdentifier: containerId)
+    else {
+      result(containerError)
+      return
+    }
+    DebugHelper.log("containerURL: \(containerURL.path)")
+
+    let rootDir = containerURL.appendingPathComponent("Documents")
+    if !FileManager.default.fileExists(atPath: rootDir.path) {
+      result(
+        FlutterError(code: "E_NOTEXIST", message: "Documents directory not exist", details: nil))
+      return
+    }
+
+    result(true)
   }
 
   private func upload(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {

@@ -69,6 +69,14 @@ class ICloudStorage {
     );
   }
 
+  static Future<bool> isReady({
+    required String containerId,
+  }) {
+    return ICloudStoragePlatform.instance.isReady(
+      containerId: containerId,
+    );
+  }
+
   /// Initiate to upload a file to iCloud
   ///
   /// [containerId] is the iCloud Container Id.
