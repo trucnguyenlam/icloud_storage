@@ -47,14 +47,16 @@ class MethodChannelICloudStorage extends ICloudStoragePlatform {
     required String containerId,
     String? path,
   }) async {
-    final data =
-        await methodChannel.invokeListMethod<Map<dynamic, dynamic>>('listChildren', {
+    final data = await methodChannel
+        .invokeListMethod<Map<dynamic, dynamic>>('listChildren', {
       'containerId': containerId,
       'path': path ?? '',
     });
 
     if (data != null) {
-      return data.map((e) => Map<String, dynamic>.from(e)).toList(growable: false);
+      return data
+          .map((e) => Map<String, dynamic>.from(e))
+          .toList(growable: false);
     } else {
       return const [];
     }
@@ -65,8 +67,8 @@ class MethodChannelICloudStorage extends ICloudStoragePlatform {
     required String containerId,
     String? path,
   }) async {
-    final data = await methodChannel
-        .invokeMapMethod<dynamic, dynamic>('getFile', {
+    final data =
+        await methodChannel.invokeMapMethod<dynamic, dynamic>('getFile', {
       'containerId': containerId,
       'path': path ?? '',
     });
@@ -114,10 +116,17 @@ class MethodChannelICloudStorage extends ICloudStoragePlatform {
   Future<bool> isReady({
     required String containerId,
   }) async {
-    final ret = await methodChannel.invokeMethod<bool>('isReady', {
-      'containerId': containerId,
-    });
-    return true == ret;
+    try {
+      final ret = await methodChannel.invokeMethod<bool>('isReady', {
+        'containerId': containerId,
+      });
+      return true == ret;
+    } catch (error) {
+      if (kDebugMode) {
+        print('Error while checking iCloud readiness: $error');
+      }
+      return false;
+    }
   }
 
   @override
