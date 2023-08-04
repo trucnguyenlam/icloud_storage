@@ -44,6 +44,14 @@ public class SwiftIcloudStoragePlugin: NSObject, FlutterPlugin {
     }
   }
 
+  private func extractRelativePath(_ fileURL: URL, _ containerURL: URL) -> String {
+    var relativePath = String(fileURL.path.dropFirst(containerURL.path.count))
+    if relativePath.starts(with: "/") {
+      relativePath = String(relativePath.dropFirst())
+    }
+    return relativePath
+  }
+
   private func listChildrenOfDirectoryInICloud(at directoryURL: URL, container containerURL: URL)
     -> [[String: Any?]]
   {
@@ -58,7 +66,7 @@ public class SwiftIcloudStoragePlugin: NSObject, FlutterPlugin {
         for nFileURL in fileURLs {
           let fileURL = canonicalURL(nFileURL)
           let map: [String: Any?] = [
-            "relativePath": String(fileURL.path.dropFirst(containerURL.path.count)),
+            "relativePath": extractRelativePath(fileURL, containerURL),
             "name": fileURL.lastPathComponent,
             "realPath": fileURL.path,
             "isFolder": fileURL.hasDirectoryPath,
@@ -146,7 +154,7 @@ public class SwiftIcloudStoragePlugin: NSObject, FlutterPlugin {
       }
     }
     let map: [String: Any?] = [
-      "relativePath": String(fileURL.absoluteString.dropFirst(containerURL.absoluteString.count)),
+      "relativePath": extractRelativePath(fileURL, containerURL),
       "name": fileURL.lastPathComponent,
       "realPath": fileURL.path,
       "isFolder": fileURL.hasDirectoryPath,
